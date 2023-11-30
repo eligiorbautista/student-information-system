@@ -278,9 +278,36 @@
               <font name="Source Code Pro" size="14" style="0"/>
               <model>
                 <item value="Select course"/>
-                <item value="Bachelor of Science in Information Technology"/>
-                <item value="Bachelor of Science in Computer Science"/>
-                <item value="Bachelor of Science in Multimedia Studies"/>
+                <item value="  Bachelor of Science in Computer Science"/>
+                <item value="  Bachelor of Science in Information Technology"/>
+                <item value="  Bachelor of Science in Software Engineering"/>
+                <item value="  Bachelor of Science in Mechanical Engineering"/>
+                <item value="  Bachelor of Science in Electrical Engineering"/>
+                <item value="  Bachelor of Science in Civil Engineering"/>
+                <item value="  Bachelor of Business Administration"/>
+                <item value="  Bachelor of Science in Business Management"/>
+                <item value="  Bachelor of Science in Accounting"/>
+                <item value="  Bachelor of Science in Biology"/>
+                <item value="  Bachelor of Science in Chemistry"/>
+                <item value="  Bachelor of Science in Physics"/>
+                <item value="  Bachelor of Science in Nursing"/>
+                <item value="  Bachelor of Science in Pharmacy"/>
+                <item value="  Bachelor of Science in Nutrition and Dietetics"/>
+                <item value="  Bachelor of Science in Mathematics"/>
+                <item value="  Bachelor of Science in Statistics"/>
+                <item value="  Bachelor of Science in Actuarial Science"/>
+                <item value="  Bachelor of Arts in Communication"/>
+                <item value="  Bachelor of Arts in Journalism"/>
+                <item value="  Bachelor of Arts in Public Relations"/>
+                <item value="  Bachelor of Arts in Psychology"/>
+                <item value="  Bachelor of Arts in Sociology"/>
+                <item value="  Bachelor of Arts in Political Science"/>
+                <item value="  Bachelor of Fine Arts in Visual Arts"/>
+                <item value="  Bachelor of Fine Arts in Graphic Design"/>
+                <item value="  Bachelor of Fine Arts in Performing Arts"/>
+                <item value="  Bachelor of Science in Elementary Education"/>
+                <item value="  Bachelor of Science in Secondary Education"/>
+                <item value="  Bachelor of Science in Special Education"/>
               </model>
             </properties>
           </component>

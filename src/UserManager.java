@@ -58,6 +58,41 @@ abstract class UserManager {
     protected abstract void sortTable();
     protected abstract void displayInformation(int rowToView);
 
+
+    // Capitalizes the first letter of each word in a full name
+    protected static String capitalizeFirstAndLastName(String lastName, String firstName) {
+        int loopCount = 0;
+        String fullName = lastName + " " + firstName;
+        // Split the full name into an array of nameParts using whitespace characters as separators
+        String[] nameParts = fullName.split("\\s");
+
+        // StringJoiner to store the result
+        StringBuilder result = new StringBuilder();
+
+        // Loop through each namePart in the array
+        for (String namePart : nameParts) {
+            // Check if the namePart is not empty
+            if (!namePart.isEmpty()) {
+                // Capitalize the first letter using charAt and substring
+                char firstLetter = Character.toUpperCase(namePart.charAt(0));
+
+                if (loopCount == 0) {
+                    // Append the capitalized first letter and the last name of the full name and add a comma with space in the end
+                    result.append(firstLetter + namePart.substring(1) + ", " );
+                    loopCount++;
+                } else {
+                    // Append the capitalized first letter and the first name of the full name
+                    result.append(firstLetter + namePart.substring(1) );
+                }
+            }
+        }
+
+        // Convert the StringJoiner to a String
+        return result.toString();
+    }
+
+
+
     // Validate if the given date is in a valid format using regular expression
     protected static boolean isValidDateFormat(String date) {
         // Define the date format using a regular expression

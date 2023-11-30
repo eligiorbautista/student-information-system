@@ -7,7 +7,8 @@ public class LoginDialog extends JDialog {
     private JButton cancelBtn;
     private JTextField usernameTextField;
     private JPasswordField passwordTextField;
-
+    private String adminUsername = "admin";
+    private String adminPassword = "1234";  
     public LoginDialog() {
         setContentPane(contentPane);
         setModal(true);
@@ -65,7 +66,7 @@ public class LoginDialog extends JDialog {
 
     // Validate username and password
     private boolean isValidCredentials(String username, String password) {
-        return "admin".equals(username) && "1234".equals(password);
+        return adminUsername.equals(username) && adminPassword.equals(password);
     }
 
     public static void main(String[] args) {

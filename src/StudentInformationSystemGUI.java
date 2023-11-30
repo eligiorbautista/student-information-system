@@ -41,7 +41,7 @@ public class StudentInformationSystemGUI extends JDialog {
     }
 
     private void initializeTable() {
-        model = new DefaultTableModel(null, new String[]{"Student ID", "Name", "Course", "Year Level", "Gender", "Date of Birth", "Email", "Contact Number", "Address"});
+        model = new DefaultTableModel(null, new String[]{"Student ID", "Name", "Course", "Year Level", "Gender", "Date of Birth", "Email", "Contact Number", "Address", "Date of Registration"});
         studentsTable.setModel(model);
         genderGroup.add(maleRadioButton);
         genderGroup.add(femaleRadioButton);
@@ -55,8 +55,8 @@ public class StudentInformationSystemGUI extends JDialog {
     }
 
     private void initializeData() {
-        model.addRow(new Object[]{1, "Aquino, Albert", "Bachelor of Science in Information Technology", 1, 'M', "01/01/1991", "albertaquino@gmail.com", "09111111111", "Lucena City, Quezon Province"});
-        model.addRow(new Object[]{1, "Brosas, Bea", "Bachelor of Science in Computer Science", 1, 'F', "02/02/1992", "beabrosas@gmail.com", "09222222222", "Tayabas City, Quezon Province"});
+        model.addRow(new Object[]{"1", "Aquino, Albert", "Bachelor of Science in Information Technology", 1, 'M', "01/01/1991", "albertaquino@gmail.com", "09111111111", "Lucena City, Quezon Province", "2023-11-25"});
+        model.addRow(new Object[]{"2", "Brosas, Bea", "Bachelor of Science in Computer Science", 1, 'F', "02/02/1992", "beabrosas@gmail.com", "09222222222", "Tayabas City, Quezon Province", "2023-11-27"});
     }
 
 

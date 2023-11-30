@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentManager extends UserManager {
+    // Get the current date as the registration date
+    java.util.Date currentDate = new java.util.Date();
+    java.sql.Date registrationDate = new java.sql.Date(currentDate.getTime());
 
     private DefaultTableModel model;
     private JTable studentsTable;
@@ -21,33 +24,30 @@ public class StudentManager extends UserManager {
         this.model = model;
     }
 
-
+    @Override
     public void register() {
         // Get user input
-        String firstName = getFirstName().getText();
-        String lastName = getLastName().getText();
-        String middleInitial = getMiddleInitial().getText();
+        String firstName = getFirstName().getText().replaceAll("\\s", "");
+        String lastName = getLastName().getText().replaceAll("\\s", "");
+        String middleInitial = getMiddleInitial().getText().toUpperCase();
         String extensionName = (getExtensionName().getSelectedIndex() > 0)
                 ? getExtensionName().getSelectedItem().toString()
                 : "";
         String gender = (getMaleRadioButton().isSelected()) ? "M" : (getFemaleRadioButton().isSelected()) ? "F" : "";
         String course = getCourse().getSelectedItem().toString();
         String year = getYearLevel().getSelectedItem().toString();
-        String birthdate = getBirthdate().getText();
+        String birthdate = getBirthdate().getText().replaceAll("\\s", "");
         String address = getAddress().getText();
-        String email = getEmail().getText();
-        String contactNumber = getContactNumber().getText();
+        String email = getEmail().getText().replaceAll("\\s", "");
+        String contactNumber = getContactNumber().getText().replaceAll("\\s", "");
 
-        // Validation flags
-        boolean emailValid = isValidEmail(email);
-        boolean contactNumberValid = isValidContactNumber(contactNumber);
+        // Form Validation flag
         boolean inputFieldsNotEmpty = true;
-
 
         // Generate student ID
         String studentId = generateStudentId();
 
-        // Validate non-blank textfields
+        // Validate non-blank text fields
         String[] inputFields = {firstName, lastName, gender, birthdate, address, email, contactNumber};
         for (String field : inputFields) {
             if (field.isEmpty()) {
@@ -56,48 +56,48 @@ public class StudentManager extends UserManager {
             }
         }
 
-        // Validate date format
-        boolean birthdateValid = isValidDateFormat(birthdate);
-
         // Construct full name
-        String fullName = String.format("%s, %s %s %s", lastName, firstName, extensionName, middleInitial);
+        String fullName = String.format("%s %s %s", capitalizeFirstAndLastName(lastName, firstName), extensionName, middleInitial);
 
         // Process if all fields are not empty and birthdate is valid
         if (inputFieldsNotEmpty) {
-            // Check if email and contact number are valid
-            if (emailValid && contactNumberValid) {
-                // Check if comboboxes have valid selections
-                if (getCourse().getSelectedIndex() == 0) {
-                    showErrorMessage("Please select a course.", "Invalid Course Selection");
-                } else if (gender.isEmpty()) {
-                    showErrorMessage("Please select a gender.", "Gender Not Selected");
-                } else if (getYearLevel().getSelectedIndex() == 0) {
-                    showErrorMessage("Please select a year level.", "Invalid Year Level Selection");
-                } else if (!birthdateValid) {
-                    // Show error if any field is empty or birthdate is not valid
-                    showErrorMessage("Please enter a valid date in the format MM/DD/YYYY.", "Invalid Date Format");
-                } else {
-                    if (isEmailRegistered(email)){
-                        showErrorMessage("Email is already registered.", "Duplicate Email");
-
-                    } else {
-                        if (isContactNumberRegistered(contactNumber)){
-                            showErrorMessage("Contact number is already registered.", "Duplicate Contact Number");
-
+            if (isValidEmail(email)) {
+                if (!isEmailRegistered(email)) {
+                    if (isValidContactNumber(contactNumber)) {
+                        if (!isContactNumberRegistered(contactNumber)) {
+                            if (getCourse().getSelectedIndex() != 0) {
+                                if (!gender.isEmpty()) {
+                                    if (getYearLevel().getSelectedIndex() != 0) {
+                                        if (isValidDateFormat(birthdate)) {
+                                            // Add a new row to the table model
+                                            model.addRow(new Object[]{studentId, fullName, course, year, gender, birthdate.trim(), email.trim(), contactNumber.trim().replace("+", ""), address, registrationDate});
+                                            showInformationMessage("User added successfully.", "Registration Success");
+                                            clearForm();
+                                        } else {
+                                            showErrorMessage("Please enter a valid date in the format MM/DD/YYYY.", "Invalid Date Format");
+                                        }
+                                    } else {
+                                        showErrorMessage("Please select a year level.", "Invalid Year Level Selection");
+                                    }
+                                } else {
+                                    showErrorMessage("Please select a gender.", "Gender Not Selected");
+                                }
+                            } else {
+                                showErrorMessage("Please select a course.", "Invalid Course Selection");
+                            }
                         } else {
-                            // Add a new row to the table model
-                            model.addRow(new Object[]{studentId, fullName, course, year, gender, birthdate, email, contactNumber, address});
-                            showInformationMessage("User added successfully.", "Registration Success");
-                            clearForm();
+                            showErrorMessage("Contact number is already registered.", "Duplicate Contact Number");
                         }
+                    } else {
+                        showErrorMessage("Please enter a valid contact number.\n\nE.g\n0928 592 8274\n63 928 5928 274", "Invalid Contact Number");
                     }
+                } else {
+                    showErrorMessage("Email is already registered.", "Duplicate Email");
                 }
             } else {
-                // Show error if email or contact number is not valid
-                showErrorMessage("Please enter a valid email and contact number.", "Invalid Email or Contact Number");
+                showErrorMessage("Please enter a valid email.\n\nE.g\njuandelacruz@example.com", "Invalid Email");
             }
         } else {
-            // Show error if any field is empty
             showErrorMessage("Please fill all the textfields.", "Unable to process request.");
         }
     }
@@ -151,6 +151,8 @@ public class StudentManager extends UserManager {
         return false;
     }
 
+    // This will run if the delete button is triggered
+    @Override
     public void delete() {
         // Prompt the user to enter the student ID for deletion
         String studentIdToDelete = JOptionPane.showInputDialog(null, "Enter Student ID to delete:");
@@ -208,6 +210,7 @@ public class StudentManager extends UserManager {
     }
 
     // This will run if the update button is triggered
+    @Override
     public void update() {
         // Prompt the user to enter the student ID for updating
         String studentIdToUpdate = JOptionPane.showInputDialog(null, "Enter Student ID to update:");
@@ -353,8 +356,8 @@ public class StudentManager extends UserManager {
     }
 
 
-
     // Clear all input fields when the clear button is triggered
+    @Override
     public void clearForm() {
         // Reset text fields to empty strings
         getFirstName().setText("");
@@ -376,6 +379,7 @@ public class StudentManager extends UserManager {
     }
 
     // Handle the search operation when the search button is triggered
+    @Override
     public void search() {
         // Get the student ID to search from the search text field
         String studentIdToSearch = getSearch().getText().trim();
@@ -401,6 +405,7 @@ public class StudentManager extends UserManager {
 
 
     // Display a dialog with user information based on the selected row
+    @Override
     public void displayInformation(int rowToView) {
         // Retrieve user information from the table model
         String studentId = (String) model.getValueAt(rowToView, 0);
@@ -412,29 +417,31 @@ public class StudentManager extends UserManager {
         String email = (String) model.getValueAt(rowToView, 6);
         String contactNumber = (String) model.getValueAt(rowToView, 7);
         String address = (String) model.getValueAt(rowToView, 8);
-
+        String registrationDate = (String) model.getValueAt(rowToView, 9);
         // Format user information for display
         String information = String.format("""
-            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            STUDENT ID                  : %s
-            ────────────────────────────────────────────────────────
-            NAME                             : %s
-            ────────────────────────────────────────────────────────
-            COURSE                        : %s
-            ────────────────────────────────────────────────────────
-            YEAR LEVEL                  : %s
-            ────────────────────────────────────────────────────────
-            GENDER                         : %s
-            ────────────────────────────────────────────────────────
-            DATE OF BIRTH            : %s
-            ────────────────────────────────────────────────────────
-            EMAIL                            : %s
-            ────────────────────────────────────────────────────────
-            CONTACT NUMBER    : %s
-            ────────────────────────────────────────────────────────
-            ADDRESS                     : %s
-            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            """, studentId, fullName, course, year, gender, birthdate, email, contactNumber, address);
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             STUDENT ID                  : %s
+            ────────────────────────────────────────────────────────────────────────
+             NAME                             : %s
+            ────────────────────────────────────────────────────────────────────────
+             COURSE                        : %s
+            ────────────────────────────────────────────────────────────────────────
+             YEAR LEVEL                  : %s
+            ────────────────────────────────────────────────────────────────────────
+             GENDER                         : %s
+            ────────────────────────────────────────────────────────────────────────
+             DATE OF BIRTH            : %s
+            ────────────────────────────────────────────────────────────────────────
+             EMAIL                            : %s
+            ────────────────────────────────────────────────────────────────────────
+             CONTACT NUMBER    : %s
+            ────────────────────────────────────────────────────────────────────────
+             ADDRESS                     : %s
+            ────────────────────────────────────────────────────────────────────────
+             DATE OF REGISTRATION             : %s
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            """, studentId, fullName, course, year, gender, birthdate, email, contactNumber, address, registrationDate);
 
         // Display the information in a dialog
         showInformationMessage(information, "Student Information");
@@ -442,6 +449,7 @@ public class StudentManager extends UserManager {
 
 
     // Sort the table based on the selected criteria
+    @Override
     public void sortTable() {
         // Get the selected sort criteria from the sortComboBox
         String sortCriteria = sortComboBox.getSelectedItem().toString();
