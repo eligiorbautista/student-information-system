@@ -1,24 +1,26 @@
-import javax.swing.table.DefaultTableModel;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StudentManager extends UserManager {
-    // Get the current date as the registration date
+    // Get the current date for the registration date
     java.util.Date currentDate = new java.util.Date();
     java.sql.Date registrationDate = new java.sql.Date(currentDate.getTime());
 
     private DefaultTableModel model;
     private JTable studentsTable;
     private JComboBox<String> sortComboBox;
-
-
     private String adminPassword = "1234";
-    public StudentManager( JTextField search, JTextField firstName, JTextField lastName, JTextField middleInitial, JComboBox<String> extensionName, JComboBox<String> course, JComboBox<String> yearLevel, JRadioButton maleRadioButton, JRadioButton femaleRadioButton, JTextField birthdate, JTextField email, JTextField contactNumber, JTextArea address, JTable studentsTable, DefaultTableModel model, JComboBox<String> sortComboBox) {
-        super(search, firstName, lastName, middleInitial, extensionName, course, yearLevel, maleRadioButton, femaleRadioButton, birthdate, email, contactNumber, address);
+
+    public StudentManager(JTextField search, JTextField firstName, JTextField lastName, JTextField middleInitial,
+            JComboBox<String> extensionName, JComboBox<String> course, JComboBox<String> yearLevel,
+            JRadioButton maleRadioButton, JRadioButton femaleRadioButton, JTextField birthdate, JTextField email,
+            JTextField contactNumber, JTextArea address, JTable studentsTable, DefaultTableModel model,
+            JComboBox<String> sortComboBox) {
+        super(search, firstName, lastName, middleInitial, extensionName, course, yearLevel, maleRadioButton,
+                femaleRadioButton, birthdate, email, contactNumber, address);
         this.studentsTable = studentsTable;
         this.sortComboBox = sortComboBox;
         this.model = model;
@@ -26,10 +28,10 @@ public class StudentManager extends UserManager {
 
     @Override
     public void register() {
-        // Get user input
+        // Extract user input
         String firstName = getFirstName().getText().replaceAll("\\s", "");
         String lastName = getLastName().getText().replaceAll("\\s", "");
-        String middleInitial = getMiddleInitial().getText().toUpperCase();
+        String middleInitial = getMiddleInitial().getText().toUpperCase().replaceAll("\\s", "");
         String extensionName = (getExtensionName().getSelectedIndex() > 0)
                 ? getExtensionName().getSelectedItem().toString()
                 : "";
@@ -41,26 +43,27 @@ public class StudentManager extends UserManager {
         String email = getEmail().getText().replaceAll("\\s", "");
         String contactNumber = getContactNumber().getText().replaceAll("\\s", "");
 
-        // Form Validation flag
-        boolean inputFieldsNotEmpty = true;
+        // Form Validation - textfields only
+        boolean textFieldsNotEmpty = true;
 
         // Generate student ID
         String studentId = generateStudentId();
 
-        // Validate non-blank text fields
-        String[] inputFields = {firstName, lastName, gender, birthdate, address, email, contactNumber};
+        // Validate non-blank textfields
+        String[] inputFields = { firstName, lastName, gender, birthdate, address, email, contactNumber };
         for (String field : inputFields) {
             if (field.isEmpty()) {
-                inputFieldsNotEmpty = false;
+                textFieldsNotEmpty = false;
                 break;
             }
         }
 
         // Construct full name
-        String fullName = String.format("%s %s %s", capitalizeFirstAndLastName(lastName, firstName), extensionName, middleInitial);
+        String fullName = String.format("%s %s %s", capitalizeFirstAndLastName(lastName, firstName), extensionName,
+                middleInitial);
 
-        // Process if all fields are not empty and birthdate is valid
-        if (inputFieldsNotEmpty) {
+        // Process if all fields are not empty and valid
+        if (textFieldsNotEmpty) {
             if (isValidEmail(email)) {
                 if (!isEmailRegistered(email)) {
                     if (isValidContactNumber(contactNumber)) {
@@ -70,11 +73,14 @@ public class StudentManager extends UserManager {
                                     if (getYearLevel().getSelectedIndex() != 0) {
                                         if (isValidDateFormat(birthdate)) {
                                             // Add a new row to the table model
-                                            model.addRow(new Object[]{studentId, fullName, course, year, gender, birthdate.trim(), email.trim(), contactNumber.trim().replace("+", ""), address, registrationDate});
+                                            model.addRow(new Object[] { studentId, fullName, course, year, gender,
+                                                    birthdate, email, contactNumber.replace("+", ""), address,
+                                                    registrationDate });
                                             showInformationMessage("User added successfully.", "Registration Success");
                                             clearForm();
                                         } else {
-                                            showErrorMessage("Please enter a valid date in the format MM/DD/YYYY.", "Invalid Date Format");
+                                            showErrorMessage("Please enter a valid date in the format MM/DD/YYYY.",
+                                                    "Invalid Date Format");
                                         }
                                     } else {
                                         showErrorMessage("Please select a year level.", "Invalid Year Level Selection");
@@ -89,20 +95,19 @@ public class StudentManager extends UserManager {
                             showErrorMessage("Contact number is already registered.", "Duplicate Contact Number");
                         }
                     } else {
-                        showErrorMessage("Please enter a valid contact number.\n\nE.g\n0928 592 8274\n63 928 5928 274", "Invalid Contact Number");
+                        showErrorMessage("Please enter a valid contact number.", "Invalid Contact Number");
                     }
                 } else {
                     showErrorMessage("Email is already registered.", "Duplicate Email");
                 }
             } else {
-                showErrorMessage("Please enter a valid email.\n\nE.g\njuandelacruz@example.com", "Invalid Email");
+                showErrorMessage("Please enter a valid email.", "Invalid Email");
             }
         } else {
             showErrorMessage("Please fill all the textfields.", "Unable to process request.");
         }
     }
 
-    // Function to check if an email is already registered
     private boolean isEmailRegistered(String newEmail) {
         for (int row = 0; row < model.getRowCount(); row++) {
             String existingEmail = (String) model.getValueAt(row, 6);
@@ -113,34 +118,28 @@ public class StudentManager extends UserManager {
         return false; // Email is not registered
     }
 
-    // Function to check if a contact number is already registered
     private boolean isContactNumberRegistered(String newContactNumber) {
         for (int row = 0; row < model.getRowCount(); row++) {
             String existingContactNumber = (String) model.getValueAt(row, 7);
             if (newContactNumber.equals(existingContactNumber)) {
-                return true; // Email is already registered
+                return true; // Contact number is already registered
             }
         }
-        return false; // Email is not registered
+        return false; // Contact number is not registered
     }
 
-    // Generate a student ID in ascending order based on the current number of rows in the table
     public String generateStudentId() {
-        // Iterate through student IDs until a unique one is found
         int nextStudentId = 1;
 
-        while (isStudentAlreadyExists(String.valueOf(nextStudentId))) {
+        while (isStudentIdAlreadyExists(String.valueOf(nextStudentId))) {
             nextStudentId++;
         }
 
         return String.valueOf(nextStudentId);
     }
 
-    // Check if the student ID already exists in the table
-    private boolean isStudentAlreadyExists(String studentId) {
-        // Iterate through each row in the table model
+    private boolean isStudentIdAlreadyExists(String studentId) {
         for (int row = 0; row < model.getRowCount(); row++) {
-            // Check if the student ID in the current row matches the provided student ID
             if (model.getValueAt(row, 0).equals(studentId)) {
                 // Return true if the student ID already exists
                 return true;
@@ -151,33 +150,27 @@ public class StudentManager extends UserManager {
         return false;
     }
 
-    // This will run if the delete button is triggered
     @Override
     public void delete() {
-        // Prompt the user to enter the student ID for deletion
         String studentIdToDelete = JOptionPane.showInputDialog(null, "Enter Student ID to delete:");
 
-        // Check if the entered student ID is not null and not empty
         if (studentIdToDelete != null && !studentIdToDelete.isEmpty()) {
-            // Find the row index corresponding to the given student ID
             int rowToDelete = findRowByStudentId(studentIdToDelete);
 
-            // Check if the student ID is found in the table
             if (rowToDelete != -1) {
-                // Prompt the user to enter the admin password for confirmation
                 JPasswordField passwordField = new JPasswordField();
-                Object[] passwordPanel = {"Enter admin password:", passwordField};
-                int confirmPassword = JOptionPane.showConfirmDialog(null, passwordPanel, "Admin Password", JOptionPane.OK_CANCEL_OPTION);
+                Object[] passwordPanel = { "Enter admin password:", passwordField };
+                int confirmPassword = JOptionPane.showConfirmDialog(null, passwordPanel, "Admin Password",
+                        JOptionPane.OK_CANCEL_OPTION);
 
                 if (confirmPassword == JOptionPane.OK_OPTION) {
                     String validateAdminPassword = new String(passwordField.getPassword());
-                    // Continue with password validation and other logic
-                    // Check if the entered admin password is correct
-                    if (validateAdminPassword.equals(adminPassword)) {
-                        // Confirm with the user before proceeding with deletion
-                        int confirmDelete = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this user?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
 
-                        // If the user confirms deletion, remove the row from the table model
+                    if (validateAdminPassword.equals(adminPassword)) {
+                        int confirmDelete = JOptionPane.showConfirmDialog(null,
+                                "Are you sure you want to delete this user?", "Confirm Deletion",
+                                JOptionPane.YES_NO_OPTION);
+
                         if (confirmDelete == JOptionPane.YES_OPTION) {
                             model.removeRow(rowToDelete);
                             showInformationMessage("User deleted successfully.", "Deletion Success");
@@ -186,99 +179,103 @@ public class StudentManager extends UserManager {
                         showErrorMessage("Admin password is incorrect.", "Unable to process request.");
                     }
                 }
-
             } else {
-                // Display an error message if the student ID is not found
                 showErrorMessage("Student ID not found.", "Student Not Found");
             }
         }
     }
 
-    // Find the row index based on the provided student ID in the table model
     private int findRowByStudentId(String studentId) {
-        // Iterate through each row in the table model
         for (int row = 0; row < model.getRowCount(); row++) {
-            // Check if the student ID in the current row matches the provided student ID
             if (model.getValueAt(row, 0).equals(studentId)) {
                 // Return the index of the row if a match is found
                 return row;
             }
         }
-
         // If no match is found, return -1
         return -1;
     }
 
-    // This will run if the update button is triggered
     @Override
     public void update() {
-        // Prompt the user to enter the student ID for updating
         String studentIdToUpdate = JOptionPane.showInputDialog(null, "Enter Student ID to update:");
         if (studentIdToUpdate != null && !studentIdToUpdate.isEmpty()) {
             int rowToUpdate = findRowByStudentId(studentIdToUpdate);
             if (rowToUpdate != -1) {
                 JPasswordField passwordField = new JPasswordField();
-                Object[] passwordPanel = {"Enter admin password:", passwordField};
-                int confirmPassword = JOptionPane.showConfirmDialog(null, passwordPanel, "Admin Password", JOptionPane.OK_CANCEL_OPTION);
+                Object[] passwordPanel = { "Enter admin password:", passwordField };
+                int confirmPassword = JOptionPane.showConfirmDialog(null, passwordPanel, "Admin Password",
+                        JOptionPane.OK_CANCEL_OPTION);
 
                 if (confirmPassword == JOptionPane.OK_OPTION) {
                     String adminPassword = new String(passwordField.getPassword());
-                    // Continue with password validation and other logic
-                    // Check if the entered admin password is correct
                     if (adminPassword.equals("1234")) {
-                        // Confirm with the user before proceeding with deletion
-                        int confirmUpdate = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this user?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-
-                        // If the user confirms deletion, remove the row from the table model
-                        if (confirmUpdate == JOptionPane.YES_OPTION) {
-                            showUpdate(rowToUpdate);
-
-
-                            showInformationMessage("User Update successfully.", "Updated Success");
-                        }
+                        showUpdate(rowToUpdate);
                     } else {
                         showErrorMessage("Admin password is incorrect.", "Unable to process request.");
                     }
                 }
-
             } else {
                 showErrorMessage("Student ID not found.", "Student Not Found");
             }
         }
     }
 
-    // Function to show a dialog for updating user information
     private void showUpdate(int rowToUpdate) {
-        // Retrieve user information from the table model
         String fullName = (String) model.getValueAt(rowToUpdate, 1);
         Object course = model.getValueAt(rowToUpdate, 2);
         Object year = model.getValueAt(rowToUpdate, 3);
-        String gender = (String) model.getValueAt(rowToUpdate, 4);
+        String gender = model.getValueAt(rowToUpdate, 4).toString();
         String birthdate = (String) model.getValueAt(rowToUpdate, 5);
         String email = (String) model.getValueAt(rowToUpdate, 6);
         String contactNumber = (String) model.getValueAt(rowToUpdate, 7);
         String address = (String) model.getValueAt(rowToUpdate, 8);
 
-
-
-        // Create a dialog for updating user information
         JDialog updateDialog = new JDialog((Frame) null, "Update User Information", true);
         updateDialog.setLayout(new GridLayout(10, 2));
 
-        // Create components for the dialog
-        JTextField fullNameField = new JTextField(fullName);
+        JTextField updateFullName = new JTextField(fullName);
 
-        // Create a combo box for the course
-        String[] courses = {"Bachelor of Science in Information Technology", "Bachelor of Science in Computer Science" , "Bachelor of Science in Multimedia Studies"};
-        JComboBox<String> courseField = new JComboBox<>(courses);
-        courseField.setSelectedItem(course);
+        String[] courses = {
+                "Select course",
+                "Bachelor of Science in Computer Science",
+                "Bachelor of Science in Information Technology",
+                "Bachelor of Science in Software Engineering",
+                "Bachelor of Science in Mechanical Engineering",
+                "Bachelor of Science in Electrical Engineering",
+                "Bachelor of Science in Civil Engineering",
+                "Bachelor of Business Administration",
+                "Bachelor of Science in Business Management",
+                "Bachelor of Science in Accounting",
+                "Bachelor of Science in Biology",
+                "Bachelor of Science in Chemistry",
+                "Bachelor of Science in Physics",
+                "Bachelor of Science in Nursing",
+                "Bachelor of Science in Pharmacy",
+                "Bachelor of Science in Nutrition and Dietetics",
+                "Bachelor of Science in Mathematics",
+                "Bachelor of Science in Statistics",
+                "Bachelor of Science in Actuarial Science",
+                "Bachelor of Arts in Communication",
+                "Bachelor of Arts in Journalism",
+                "Bachelor of Arts in Public Relations",
+                "Bachelor of Arts in Psychology",
+                "Bachelor of Arts in Sociology",
+                "Bachelor of Arts in Political Science",
+                "Bachelor of Fine Arts in Visual Arts",
+                "Bachelor of Fine Arts in Graphic Design",
+                "Bachelor of Fine Arts in Performing Arts",
+                "Bachelor of Science in Elementary Education",
+                "Bachelor of Science in Secondary Education",
+                "Bachelor of Science in Special Education"
+        };
+        JComboBox<String> updateCourse = new JComboBox<>(courses);
+        updateCourse.setSelectedItem(course);
 
-        // Create a combo box for the year
-        String[] years = {"1", "2", "3", "4"};
-        JComboBox<String> yearField = new JComboBox<>(years);
-        yearField.setSelectedItem(year);
+        String[] years = { "Select year level", "1", "2", "3", "4", "5" };
+        JComboBox<String> updateYear = new JComboBox<>(years);
+        updateYear.setSelectedItem(year);
 
-        // Create radio buttons for gender
         JRadioButton maleRadioButton = new JRadioButton("Male");
         JRadioButton femaleRadioButton = new JRadioButton("Female");
         ButtonGroup genderGroup = new ButtonGroup();
@@ -290,76 +287,125 @@ public class StudentManager extends UserManager {
             femaleRadioButton.setSelected(true);
         }
 
-        JTextField birthdateField = new JTextField(birthdate);
-        JTextField emailField = new JTextField(email);
-        JTextField contactNumberField = new JTextField(contactNumber);
-        JTextField addressField = new JTextField(address);
+        JTextField updateBirthdate = new JTextField(birthdate);
+        JTextField updateEmail = new JTextField(email);
+        JTextField updateContactNumber = new JTextField(contactNumber);
+        JTextField updateAddress = new JTextField(address);
 
-        // Add components to the dialog
         updateDialog.add(new JLabel("Name:"));
-        updateDialog.add(fullNameField);
+        updateDialog.add(updateFullName);
         updateDialog.add(new JLabel("Course:"));
-        updateDialog.add(courseField);
+        updateDialog.add(updateCourse);
         updateDialog.add(new JLabel("Year Level:"));
-        updateDialog.add(yearField);
+        updateDialog.add(updateYear);
         updateDialog.add(new JLabel("Gender:"));
         updateDialog.add(maleRadioButton);
         updateDialog.add(new JLabel(""));
         updateDialog.add(femaleRadioButton);
         updateDialog.add(new JLabel("Birthdate (mm/dd/yyyy):"));
-        updateDialog.add(birthdateField);
+        updateDialog.add(updateBirthdate);
         updateDialog.add(new JLabel("Email:"));
-        updateDialog.add(emailField);
+        updateDialog.add(updateEmail);
         updateDialog.add(new JLabel("Contact Number:"));
-        updateDialog.add(contactNumberField);
+        updateDialog.add(updateContactNumber);
         updateDialog.add(new JLabel("Address:"));
-        updateDialog.add(addressField);
+        updateDialog.add(updateAddress);
 
-        // Create an "Update" button
         JButton updateButton = new JButton("Update");
-        updateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Validate date format
-                if (!isValidDateFormat(birthdateField.getText())) {
-                    JOptionPane.showMessageDialog(updateDialog,
-                            "Invalid date format. Please use MM/dd/yyyy.", "Date Format Error", JOptionPane.ERROR_MESSAGE);
-                    return;
+        updateButton.addActionListener(e -> {
+            if (!isValidDateFormat(updateBirthdate.getText())) {
+                JOptionPane.showMessageDialog(updateDialog, "Invalid date format. Please use MM/dd/yyyy.",
+                        "Date Format Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String updateGender = maleRadioButton.isSelected() ? "M" : (femaleRadioButton.isSelected() ? "F" : "");
+
+            boolean textFieldsNotEmpty = true;
+            String[] inputFields = { updateFullName.getText(), updateEmail.getText(), updateContactNumber.getText(),
+                    updateAddress.getText(), updateBirthdate.getText() };
+
+            for (String field : inputFields) {
+                if (field.isEmpty()) {
+                    textFieldsNotEmpty = false;
+                    break;
                 }
+            }
 
-                // Get selected gender
-                String selectedGender = maleRadioButton.isSelected() ? "M" : (femaleRadioButton.isSelected() ? "F" : "");
+            if (textFieldsNotEmpty) {
+                if (isValidEmail(updateEmail.getText())) {
+                    if (model.getValueAt(rowToUpdate, 6) == updateEmail
+                            .getText() == !isEmailRegistered(updateEmail.getText())) {
+                        if (isValidContactNumber(updateContactNumber.getText())) {
+                            if (model.getValueAt(rowToUpdate, 7) == updateContactNumber
+                                    .getText() == !isContactNumberRegistered(updateContactNumber.getText())) {
+                                if (updateCourse.getSelectedIndex() != 0) {
+                                    if (!updateGender.isEmpty()) {
+                                        if (updateYear.getSelectedIndex() != 0) {
+                                            if (isValidDateFormat(updateBirthdate.getText())) {
+                                                int confirmUpdate = JOptionPane.showConfirmDialog(null,
+                                                        "Are you sure you want to update this user?",
+                                                        "Confirm Deletion",
+                                                        JOptionPane.YES_NO_OPTION);
 
-                // Apply changes to the table model
-                model.setValueAt(fullNameField.getText(), rowToUpdate, 1);
-                model.setValueAt(courseField.getSelectedItem(), rowToUpdate, 2);
-                model.setValueAt(yearField.getSelectedItem(), rowToUpdate, 3);
-                model.setValueAt(selectedGender, rowToUpdate, 4);
-                model.setValueAt(birthdateField.getText(), rowToUpdate, 5);
-                model.setValueAt(emailField.getText(), rowToUpdate, 6);
-                model.setValueAt(contactNumberField.getText(), rowToUpdate, 7);
-                model.setValueAt(addressField.getText(), rowToUpdate, 8);
+                                                if (confirmUpdate == JOptionPane.YES_OPTION) {
+                                                    model.setValueAt(updateFullName.getText(), rowToUpdate, 1);
+                                                    model.setValueAt(updateCourse.getSelectedItem(), rowToUpdate, 2);
+                                                    model.setValueAt(updateYear.getSelectedItem(), rowToUpdate, 3);
+                                                    model.setValueAt(updateGender, rowToUpdate, 4);
+                                                    model.setValueAt(updateBirthdate.getText(), rowToUpdate, 5);
+                                                    model.setValueAt(updateEmail.getText(), rowToUpdate, 6);
+                                                    model.setValueAt(updateContactNumber.getText(), rowToUpdate, 7);
+                                                    model.setValueAt(updateAddress.getText(), rowToUpdate, 8);
 
-                // Close the dialog
-                updateDialog.dispose();
+                                                    updateDialog.dispose();
+                                                    showInformationMessage("User Update successfully.",
+                                                            "Updated Success");
+                                                }
+                                            } else {
+                                                showErrorMessage("Please enter a valid date in the format MM/DD/YYYY.",
+                                                        "Invalid Date Format");
+                                            }
+                                        } else {
+                                            showErrorMessage("Please select a year level.",
+                                                    "Invalid Year Level Selection");
+                                        }
+                                    } else {
+                                        showErrorMessage("Please select a gender.", "Gender Not Selected");
+                                    }
+                                } else {
+                                    showErrorMessage("Please select a course.", "Invalid Course Selection");
+                                }
+                            } else {
+                                showErrorMessage("Contact number is already registered.", "Duplicate Contact Number");
+                            }
+                        } else {
+                            showErrorMessage(
+                                    "Please enter a valid contact number.\n\nE.g\n0928 592 8274\n63 928 5928 274",
+                                    "Invalid Contact Number");
+                        }
+                    } else {
+                        showErrorMessage("Email is already registered.", "Duplicate Email");
+                    }
+                } else {
+                    showErrorMessage("Please enter a valid email.\n\nE.g\njuandelacruz@example.com", "Invalid Email");
+                }
+            } else {
+                showErrorMessage("Please fill all the textfields.", "Unable to process request.");
             }
         });
 
-        // Add the "Update" button to the dialog
         updateDialog.add(new JLabel(""));
         updateDialog.add(updateButton);
 
-        // Set dialog properties
         updateDialog.setSize(400, 300);
         updateDialog.setLocationRelativeTo(null);
         updateDialog.setVisible(true);
     }
 
-
-    // Clear all input fields when the clear button is triggered
     @Override
     public void clearForm() {
-        // Reset text fields to empty strings
         getFirstName().setText("");
         getMiddleInitial().setText("");
         getLastName().setText("");
@@ -368,106 +414,81 @@ public class StudentManager extends UserManager {
         getContactNumber().setText("");
         getAddress().setText("");
 
-        // Reset combo box selections to default
         getCourse().setSelectedIndex(0);
         getExtensionName().setSelectedIndex(0);
         getYearLevel().setSelectedIndex(0);
 
-        // Reset radio button selections
         getMaleRadioButton().setSelected(false);
         getFemaleRadioButton().setSelected(false);
     }
 
-    // Handle the search operation when the search button is triggered
     @Override
     public void search() {
-        // Get the student ID to search from the search text field
         String studentIdToSearch = getSearch().getText().trim();
 
-        // Check if the search field is not empty
         if (!studentIdToSearch.isEmpty()) {
-            // Find the row index based on the entered student ID
             int rowToView = findRowByStudentId(studentIdToSearch);
 
-            // Check if the student ID is found in the table
             if (rowToView != -1) {
-                // Display a dialog showing user information
                 displayInformation(rowToView);
             } else {
-                // Show an error message if the student ID is not found
                 showErrorMessage("Student ID not found.", "Student Not Found");
             }
         } else {
-            // Show an error message if the search field is empty
             showErrorMessage("Please enter a Student ID.", "Empty Field");
         }
     }
 
-
-    // Display a dialog with user information based on the selected row
     @Override
     public void displayInformation(int rowToView) {
-        // Retrieve user information from the table model
         String studentId = (String) model.getValueAt(rowToView, 0);
         String fullName = (String) model.getValueAt(rowToView, 1);
         Object course = model.getValueAt(rowToView, 2);
         Object year = model.getValueAt(rowToView, 3);
-        String gender = (String) model.getValueAt(rowToView, 4);
+        String gender = model.getValueAt(rowToView, 4).toString();
         String birthdate = (String) model.getValueAt(rowToView, 5);
         String email = (String) model.getValueAt(rowToView, 6);
         String contactNumber = (String) model.getValueAt(rowToView, 7);
         String address = (String) model.getValueAt(rowToView, 8);
         String registrationDate = (String) model.getValueAt(rowToView, 9);
-        // Format user information for display
-        String information = String.format("""
-            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             STUDENT ID                  : %s
-            ────────────────────────────────────────────────────────────────────────
-             NAME                             : %s
-            ────────────────────────────────────────────────────────────────────────
-             COURSE                        : %s
-            ────────────────────────────────────────────────────────────────────────
-             YEAR LEVEL                  : %s
-            ────────────────────────────────────────────────────────────────────────
-             GENDER                         : %s
-            ────────────────────────────────────────────────────────────────────────
-             DATE OF BIRTH            : %s
-            ────────────────────────────────────────────────────────────────────────
-             EMAIL                            : %s
-            ────────────────────────────────────────────────────────────────────────
-             CONTACT NUMBER    : %s
-            ────────────────────────────────────────────────────────────────────────
-             ADDRESS                     : %s
-            ────────────────────────────────────────────────────────────────────────
-             DATE OF REGISTRATION             : %s
-            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            """, studentId, fullName, course, year, gender, birthdate, email, contactNumber, address, registrationDate);
 
-        // Display the information in a dialog
+        String information = String.format("""
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                 STUDENT ID                            : %s
+                ────────────────────────────────────────────────────────────────────────
+                 NAME                                       : %s
+                ────────────────────────────────────────────────────────────────────────
+                 COURSE                                  : %s
+                ────────────────────────────────────────────────────────────────────────
+                 YEAR LEVEL                            : %s
+                ────────────────────────────────────────────────────────────────────────
+                 GENDER                                   : %s
+                ────────────────────────────────────────────────────────────────────────
+                 DATE OF BIRTH                      : %s
+                ────────────────────────────────────────────────────────────────────────
+                 EMAIL                                      : %s
+                ────────────────────────────────────────────────────────────────────────
+                 CONTACT NUMBER              : %s
+                ────────────────────────────────────────────────────────────────────────
+                 ADDRESS                               : %s
+                ────────────────────────────────────────────────────────────────────────
+                 DATE OF REGISTRATION     : %s
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                """, studentId, fullName, course, year, gender, birthdate, email, contactNumber, address,
+                registrationDate);
+
         showInformationMessage(information, "Student Information");
     }
 
-
-    // Sort the table based on the selected criteria
     @Override
     public void sortTable() {
-        // Get the selected sort criteria from the sortComboBox
         String sortCriteria = sortComboBox.getSelectedItem().toString();
-
-        // Create a TableRowSorter for the table model
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
-
-        // Set the TableRowSorter to the studentsTable
         studentsTable.setRowSorter(sorter);
 
-        // Create a list to store the sort keys
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
 
-        // Determine the column index based on the selected criteria
         switch (sortCriteria) {
-            case "Student ID":
-                sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-                break;
             case "Name":
                 sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
                 break;
@@ -484,12 +505,10 @@ public class StudentManager extends UserManager {
                 sortKeys.add(new RowSorter.SortKey(7, SortOrder.ASCENDING));
                 break;
             default:
-                // Default to removing sort order if no valid criteria is selected
                 sorter.setSortKeys(null);
                 break;
         }
 
-        // Set the sort keys for the TableRowSorter
         sorter.setSortKeys(sortKeys);
     }
 

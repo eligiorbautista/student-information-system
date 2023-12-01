@@ -8,25 +8,16 @@ public class LoginDialog extends JDialog {
     private JTextField usernameTextField;
     private JPasswordField passwordTextField;
     private String adminUsername = "admin";
-    private String adminPassword = "1234";  
+    private String adminPassword = "1234";
+
     public LoginDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(loginBtn);
 
-        loginBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onLogin();
-            }
-        });
+        loginBtn.addActionListener(e -> onLogin());
+        cancelBtn.addActionListener(e -> onCancel());
 
-        cancelBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
-
-        // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -34,39 +25,39 @@ public class LoginDialog extends JDialog {
             }
         });
 
-        // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        // Set the icon
+        ImageIcon icon = new ImageIcon("sims-icon.png");
+        setIconImage(icon.getImage());
     }
 
     private void onLogin() {
-        // Validate username and password
-        if (isValidCredentials(usernameTextField.getText(), new String(passwordTextField.getPassword()))) {
-            // If valid, open the student information management interface
-            StudentInformationSystemGUI dialog = new StudentInformationSystemGUI();
-            dialog.setTitle("Student Information Management System");
-            dialog.pack();
-            dialog.setLocationRelativeTo(null);
-            dialog.setVisible(true);
-            System.exit(0);
-            dispose();
+        if (adminUsername.equals(usernameTextField.getText())
+                && adminPassword.equals(new String(passwordTextField.getPassword()))) {
+            openStudentInformationSystem();
         } else {
-            // If invalid, show an error message
-            JOptionPane.showMessageDialog(this, "Invalid username or password", "Login Error", JOptionPane.ERROR_MESSAGE);
+            showLoginError();
         }
     }
 
-    private void onCancel() {
-        // Close the dialog
+    private void openStudentInformationSystem() {
+        StudentInformationSystemGUI dialog = new StudentInformationSystemGUI();
+        dialog.setTitle("Student Information Management System");
+        dialog.pack();
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+        System.exit(0);
         dispose();
     }
 
-    // Validate username and password
-    private boolean isValidCredentials(String username, String password) {
-        return adminUsername.equals(username) && adminPassword.equals(password);
+    private void showLoginError() {
+        JOptionPane.showMessageDialog(this, "Invalid username or password", "Login Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void onCancel() {
+        dispose();
     }
 
     public static void main(String[] args) {
