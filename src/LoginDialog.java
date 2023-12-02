@@ -13,6 +13,7 @@ public class LoginDialog extends JDialog {
     public LoginDialog() {
         setContentPane(contentPane);
         setModal(true);
+        setResizable(false);
         getRootPane().setDefaultButton(loginBtn);
 
         loginBtn.addActionListener(e -> onLogin());
@@ -28,7 +29,6 @@ public class LoginDialog extends JDialog {
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        // Set the icon
         ImageIcon icon = new ImageIcon("sims-icon.png");
         setIconImage(icon.getImage());
     }

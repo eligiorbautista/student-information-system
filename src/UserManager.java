@@ -8,23 +8,19 @@ abstract class UserManager {
     private JTextField lastName;
     private JTextField middleInitial;
     private JComboBox<String> extensionName;
-    private JComboBox<String> course;
-    private JComboBox<String> yearLevel;
     private JRadioButton maleRadioButton;
     private JRadioButton femaleRadioButton;
     private JTextField birthdate;
     private JTextField email;
     private JTextArea address;
     private JTextField contactNumber;
-
+    
     protected UserManager(
             JTextField search,
             JTextField firstName,
             JTextField lastName,
             JTextField middleInitial,
             JComboBox<String> extensionName,
-            JComboBox<String> course,
-            JComboBox<String> yearLevel,
             JRadioButton maleRadioButton,
             JRadioButton femaleRadioButton,
             JTextField birthdate,
@@ -36,8 +32,6 @@ abstract class UserManager {
         this.lastName = lastName;
         this.middleInitial = middleInitial;
         this.extensionName = extensionName;
-        this.course = course;
-        this.yearLevel = yearLevel;
         this.maleRadioButton = maleRadioButton;
         this.femaleRadioButton = femaleRadioButton;
         this.birthdate = birthdate;
@@ -125,14 +119,6 @@ abstract class UserManager {
 
     protected JComboBox<String> getExtensionName() {
         return extensionName;
-    }
-
-    protected JComboBox<String> getCourse() {
-        return course;
-    }
-
-    protected JComboBox<String> getYearLevel() {
-        return yearLevel;
     }
 
     protected JRadioButton getMaleRadioButton() {

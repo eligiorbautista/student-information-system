@@ -30,8 +30,8 @@ public class StudentInformationSystemGUI extends JDialog {
     public StudentInformationSystemGUI() {
         setContentPane(contentPane);
         setModal(true);
+        setResizable(false);
 
-        // Set the icon
         ImageIcon icon = new ImageIcon("sims-icon.png");
         setIconImage(icon.getImage());
 
@@ -142,6 +142,7 @@ public class StudentInformationSystemGUI extends JDialog {
         StudentInformationSystemGUI dialog = new StudentInformationSystemGUI();
         dialog.setTitle("Student Information Management System");
         dialog.pack();
+        dialog.setResizable(isDefaultLookAndFeelDecorated());
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         System.exit(0);

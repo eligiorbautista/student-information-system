@@ -12,18 +12,42 @@ public class StudentManager extends UserManager {
     private DefaultTableModel model;
     private JTable studentsTable;
     private JComboBox<String> sortComboBox;
+    private JComboBox<String> course;
+    private JComboBox<String> yearLevel;
     private String adminPassword = "1234";
 
-    public StudentManager(JTextField search, JTextField firstName, JTextField lastName, JTextField middleInitial,
-            JComboBox<String> extensionName, JComboBox<String> course, JComboBox<String> yearLevel,
-            JRadioButton maleRadioButton, JRadioButton femaleRadioButton, JTextField birthdate, JTextField email,
-            JTextField contactNumber, JTextArea address, JTable studentsTable, DefaultTableModel model,
+    public StudentManager(
+            JTextField search,
+            JTextField firstName,
+            JTextField lastName,
+            JTextField middleInitial,
+            JComboBox<String> extensionName,
+            JComboBox<String> course,
+            JComboBox<String> yearLevel,
+            JRadioButton maleRadioButton,
+            JRadioButton femaleRadioButton,
+            JTextField birthdate,
+            JTextField email,
+            JTextField contactNumber,
+            JTextArea address,
+            JTable studentsTable,
+            DefaultTableModel model,
             JComboBox<String> sortComboBox) {
-        super(search, firstName, lastName, middleInitial, extensionName, course, yearLevel, maleRadioButton,
+        super(search, firstName, lastName, middleInitial, extensionName, maleRadioButton,
                 femaleRadioButton, birthdate, email, contactNumber, address);
+        this.course = course;
+        this.yearLevel = yearLevel;
         this.studentsTable = studentsTable;
         this.sortComboBox = sortComboBox;
         this.model = model;
+    }
+
+    protected JComboBox<String> getCourse() {
+        return course;
+    }
+
+    protected JComboBox<String> getYearLevel() {
+        return yearLevel;
     }
 
     @Override
@@ -232,7 +256,15 @@ public class StudentManager extends UserManager {
         String address = (String) model.getValueAt(rowToUpdate, 8);
 
         JDialog updateDialog = new JDialog((Frame) null, "Update User Information", true);
-        updateDialog.setLayout(new GridLayout(10, 2));
+
+        JPanel contentPane = new JPanel();
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        updateDialog.setContentPane(contentPane);
+ 
+        ImageIcon icon = new ImageIcon("sims-icon.png");
+        updateDialog.setIconImage(icon.getImage());
+
+        updateDialog.setLayout(new GridLayout(10, 2,));  
 
         JTextField updateFullName = new JTextField(fullName);
 
@@ -399,7 +431,7 @@ public class StudentManager extends UserManager {
         updateDialog.add(new JLabel(""));
         updateDialog.add(updateButton);
 
-        updateDialog.setSize(400, 300);
+        updateDialog.setSize(600, 250);
         updateDialog.setLocationRelativeTo(null);
         updateDialog.setVisible(true);
     }
