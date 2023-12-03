@@ -63,7 +63,7 @@ abstract class UserManager {
             if (!namePart.isEmpty()) {
                 char firstLetter = Character.toUpperCase(namePart.charAt(0));
                 if (result.length() == 0) {
-                    result.append(firstLetter).append(namePart.substring(0)).append(", ");
+                    result.append(firstLetter).append(namePart.substring(1)).append(", ");
                 } else {
                     result.append(firstLetter).append(namePart.substring(1));
                 }

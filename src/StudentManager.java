@@ -1,13 +1,25 @@
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StudentManager extends UserManager {
-    // Get the current date for the registration date
-    java.util.Date currentDate = new java.util.Date();
-    java.sql.Date registrationDate = new java.sql.Date(currentDate.getTime());
+    // Get the current date
+    LocalDate currentDate = LocalDate.now();
+
+    // Create specific date format
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+
+    // Format date to a String
+    String registrationDate = currentDate.format(formatter).replaceAll("-", "/");
+
+
+
 
     private DefaultTableModel model;
     private JTable studentsTable;
@@ -83,7 +95,7 @@ public class StudentManager extends UserManager {
         }
 
         // Construct full name
-        String fullName = String.format("%s %s %s", capitalizeFirstAndLastName(lastName, firstName), extensionName,
+        String fullName = String.format("%s %s %s.", capitalizeFirstAndLastName(lastName, firstName), extensionName,
                 middleInitial);
 
         // Process if all fields are not empty and valid
@@ -264,7 +276,7 @@ public class StudentManager extends UserManager {
         ImageIcon icon = new ImageIcon("sims-icon.png");
         updateDialog.setIconImage(icon.getImage());
 
-        updateDialog.setLayout(new GridLayout(10, 2,));  
+        updateDialog.setLayout(new GridLayout(10, 2));  
 
         JTextField updateFullName = new JTextField(fullName);
 

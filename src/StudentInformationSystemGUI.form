@@ -215,6 +215,7 @@
             </constraints>
             <properties>
               <font name="Source Code Pro" size="14" style="0"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="b0db2" class="javax.swing.JComboBox" binding="extensionNameComboBox">
@@ -250,6 +251,7 @@
             </constraints>
             <properties>
               <font name="Source Code Pro" size="14" style="0"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="82744" class="javax.swing.JTextField" binding="middleInitialTextField">
@@ -262,6 +264,7 @@
             </constraints>
             <properties>
               <font name="Source Code Pro" size="14" style="0"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="bf909" class="javax.swing.JComboBox" binding="courseComboBox">
@@ -482,6 +485,7 @@
                     <properties>
                       <enabled value="true"/>
                       <font name="Source Code Pro" size="14" style="0"/>
+                      <text value=""/>
                       <wrapStyleWord value="true"/>
                     </properties>
                   </component>
@@ -499,6 +503,7 @@
             </constraints>
             <properties>
               <font name="Source Code Pro" size="14" style="0"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="829ce" class="javax.swing.JTextField" binding="emailTextField">
@@ -511,6 +516,7 @@
             </constraints>
             <properties>
               <font name="Source Code Pro" size="14" style="0"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="3c7ec" class="javax.swing.JTextField" binding="contactNumberTextField">
@@ -523,6 +529,7 @@
             </constraints>
             <properties>
               <font name="Source Code Pro" size="14" style="0"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="46d7a" class="javax.swing.JLabel">
